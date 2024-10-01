@@ -1,0 +1,295 @@
+<!DOCTYPE html> 
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loja Online</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="firebase.js"></script>
+    <script type="module">
+        // Importar Firebase Authentication
+        import { getAuth, onAuthStateChanged } from 
+       "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+        // Configurações do Firebase
+        const configuracaoFirebase = {
+            apiKey: "AIzaSyBePL-s9584Awcc0Eeih99UR4I70vJ2Nmo",
+            authDomain: "carrinhocompras-b6af5.firebaseapp.com",
+            projectId: "carrinhocompras-b6af5",
+            storageBucket: "carrinhocompras-b6af5.appspot.com",
+            messagingSenderId: "969767267613",
+            appId: "1:969767267613:web:c427b5823214aae51805f4"
+        };
+        // Inicializar Firebase
+        const app = initializeApp(configuracaoFirebase);
+        const auth = getAuth(app);
+        // Verificar se o usuário está autenticado
+        onAuthStateChanged(auth, (user) => {
+        if (!user) {
+        // Se não estiver autenticado, redirecionar para a página de login
+        window.location.href = "index.html";
+        }
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <div class="search-container">
+            <input type="text" id="search" placeholder="Buscar um ou mais produtos (ex: Arroz, Feijão...)">
+            <span class="search-icon">🔍</span>
+        </div>
+        <div class="logo">
+            <img src="imagens/Form.png" alt="Logo">
+        </div>
+        <div class="cart-icon">
+            <img src="imagens/Group 139.png" alt="Carrinho" onclick="toggleCart()">
+        </div>
+    </header>
+    
+    <main>
+        <div class="banner">
+            <img src="imagens/Banner.png" alt="">
+        </div>
+        <section class="category">
+            <h2>Bebidas:</h2>
+            <div class="item">
+                <img src="imagens/agua.png" alt="Bebida 1">
+                <p>Água c/ Gás 1,5L</p>
+                <p class="preco">R$ 3,99</p>
+                <div class="quantity-control">
+                    <button class="quantity-btn" onclick="decreaseQuantity(this)">-</button>
+                    <input type="text" value="1">
+                    <button class="quantity-btn" onclick="increaseQuantity(this)">+</button>
+                </div>
+                <button class="buy-btn" onclick="buyProduct(this)">Comprar</button>
+            </div>
+            <div class="item">
+                <img src="imagens/suco.png" alt="Bebida 1">
+                <p>Suco de Uva 1,5L</p>
+                <p class="preco">R$ 15,89</p>
+                <div class="quantity-control">
+                    <button class="quantity-btn" onclick="decreaseQuantity(this)">-</button>
+                    <input type="text" value="1">
+                    <button class="quantity-btn" onclick="increaseQuantity(this)">+</button>
+                </div>
+                <button class="buy-btn" onclick="buyProduct(this)">Comprar</button>
+            </div>
+            <div class="item">
+                <img src="imagens/powerade.png" alt="Bebida 1">
+                <p>Powerade 500ml</p>
+                <p class="preco">R$ 2,50</p>
+                <div class="quantity-control">
+                    <button class="quantity-btn" onclick="decreaseQuantity(this)">-</button>
+                    <input type="text" value="1">
+                    <button class="quantity-btn" onclick="increaseQuantity(this)">+</button>
+                </div>
+                <button class="buy-btn" onclick="buyProduct(this)">Comprar</button>
+            </div>
+            <div class="item">
+                <img src="imagens/monster.png" alt="Bebida 1">
+                <p>Monster Uva</p>
+                <p class="preco">R$ 8,29</p>
+                <div class="quantity-control">
+                    <button class="quantity-btn" onclick="decreaseQuantity(this)">-</button>
+                    <input type="text" value="1">
+                    <button class="quantity-btn" onclick="increaseQuantity(this)">+</button>
+                </div>
+                <button class="buy-btn" onclick="buyProduct(this)">Comprar</button>
+            </div>
+            <div class="item">
+                <img src="imagens/coca.png" alt="Bebida 1">
+                <p>Coca-Cola 2L</p>
+                <p class="preco">R$ 8,99</p>
+                <div class="quantity-control">
+                    <button class="quantity-btn" onclick="decreaseQuantity(this)">-</button>
+                    <input type="text" value="1">
+                    <button class="quantity-btn" onclick="increaseQuantity(this)">+</button>
+                </div>
+                <button class="buy-btn" onclick="buyProduct(this)">Comprar</button>
+            </div>
+            <div class="item">
+                <img src="imagens/mate.png" alt="Bebida 1">
+                <p>Chá Mate Leão 1,5L</p>
+                <p class="preco">R$ 5,69</p>
+                <div class="quantity-control">
+                    <button class="quantity-btn" onclick="decreaseQuantity(this)">-</button>
+                    <input type="text" value="1">
+                    <button class="quantity-btn" onclick="increaseQuantity(this)">+</button>
+                </div>
+                <button class="buy-btn" onclick="buyProduct(this)">Comprar</button>
+            </div>
+        </section>
+
+        <section class="category">
+            <h2>Salgadinhos:</h2>
+            <div class="item">
+                <img src="imagens/doritos.png" alt="Salgadinho 1">
+                <p>Doritos</p>
+                <p class="preco">R$ 13,99</p>
+                <div class="quantity-control">
+                    <button class="quantity-btn" onclick="decreaseQuantity(this)">-</button>
+                    <input type="text" value="1">
+                    <button class="quantity-btn" onclick="increaseQuantity(this)">+</button>
+                </div>
+                <button class="buy-btn" onclick="buyProduct(this)">Comprar</button>
+            </div>
+            <div class="item">
+                <img src="imagens/sensacao.png" alt="Salgadinho 1">
+                <p>Sensações</p>
+                <p class="preco">R$ 7,99</p>
+                <div class="quantity-control">
+                    <button class="quantity-btn" onclick="decreaseQuantity(this)">-</button>
+                    <input type="text" value="1">
+                    <button class="quantity-btn" onclick="increaseQuantity(this)">+</button>
+                </div>
+                <button class="buy-btn" onclick="buyProduct(this)">Comprar</button>
+            </div>
+            <div class="item">
+                <img src="imagens/ruffle.png" alt="Salgadinho 1">
+                <p>Ruffles</p>
+                <p class="preco">R$ 12,79</p>
+                <div class="quantity-control">
+                    <button class="quantity-btn" onclick="decreaseQuantity(this)">-</button>
+                    <input type="text" value="1">
+                    <button class="quantity-btn" onclick="increaseQuantity(this)">+</button>
+                </div>
+                <button class="buy-btn" onclick="buyProduct(this)">Comprar</button>
+            </div>
+            <div class="item">
+                <img src="imagens/cheetos.png" alt="Salgadinho 1">
+                <p>Cheetos</p>
+                <p class="preco">R$ 11,99</p>
+                <div class="quantity-control">
+                    <button class="quantity-btn" onclick="decreaseQuantity(this)">-</button>
+                    <input type="text" value="1">
+                    <button class="quantity-btn" onclick="increaseQuantity(this)">+</button>
+                </div>
+                <button class="buy-btn" onclick="buyProduct(this)">Comprar</button>
+            </div>
+            <div class="item">
+                <img src="imagens/lays.png" alt="Salgadinho 1">
+                <p>Lays</p>
+                <p class="preco">R$ 10,59</p>
+                <div class="quantity-control">
+                    <button class="quantity-btn" onclick="decreaseQuantity(this)">-</button>
+                    <input type="text" value="1">
+                    <button class="quantity-btn" onclick="increaseQuantity(this)">+</button>
+                </div>
+                <button class="buy-btn" onclick="buyProduct(this)">Comprar</button>
+            </div>
+            <div class="item">
+                <img src="imagens/pringles.png" alt="Salgadinho 1">
+                <p>Pringles</p>
+                <p class="preco">R$ 9,99</p>
+                <div class="quantity-control">
+                    <button class="quantity-btn" onclick="decreaseQuantity(this)">-</button>
+                    <input type="text" value="1">
+                    <button class="quantity-btn" onclick="increaseQuantity(this)">+</button>
+                </div>
+                <button class="buy-btn" onclick="buyProduct(this)">Comprar</button>
+            </div>
+        </section>
+
+        <section class="category">
+            <h2>Hortaliças:</h2>
+            <div class="item">
+                <img src="imagens/batata.png" alt="Hortalica 1">
+                <p>Batata</p>
+                <p class="preco">R$ 4,99<small>kg</small></p>
+                <div class="quantity-control">
+                    <button class="quantity-btn" onclick="decreaseQuantity(this)">-</button>
+                    <input type="text" value="1">
+                    <button class="quantity-btn" onclick="increaseQuantity(this)">+</button>
+                </div>
+                <button class="buy-btn" onclick="buyProduct(this)">Comprar</button>
+            </div>
+            <div class="item">
+                <img src="imagens/tomate.png" alt="Hortalica 1">
+                <p>Tomate</p>
+                <p class="preco">R$ 1,99<small>kg</small></p>
+                <div class="quantity-control">
+                    <button class="quantity-btn" onclick="decreaseQuantity(this)">-</button>
+                    <input type="text" value="1">
+                    <button class="quantity-btn" onclick="increaseQuantity(this)">+</button>
+                </div>
+                <button class="buy-btn" onclick="buyProduct(this)">Comprar</button>
+            </div>
+            <div class="item">
+                <img src="imagens/cenoura.png" alt="Hortalica 1">
+                <p>Cenoura</p>
+                <p class="preco">R$ 2,59<small>kg</small></p>
+                <div class="quantity-control">
+                    <button class="quantity-btn" onclick="decreaseQuantity(this)">-</button>
+                    <input type="text" value="1">
+                    <button class="quantity-btn" onclick="increaseQuantity(this)">+</button>
+                </div>
+                <button class="buy-btn" onclick="buyProduct(this)">Comprar</button>
+            </div>
+            <div class="item">
+                <img src="imagens/banana.png" alt="Hortalica 1">
+                <p>Banana</p>
+                <p class="preco">R$ 3,99<small>kg</small></p>
+                <div class="quantity-control">
+                    <button class="quantity-btn" onclick="decreaseQuantity(this)">-</button>
+                    <input type="text" value="1">
+                    <button class="quantity-btn" onclick="increaseQuantity(this)">+</button>
+                </div>
+                <button class="buy-btn" onclick="buyProduct(this)">Comprar</button>
+            </div>
+            <div class="item">
+                <img src="imagens/limao.png" alt="Hortalica 1">
+                <p>Limão Taiti</p>
+                <p class="preco">R$ 5,99<small>kg</small></p>
+                <div class="quantity-control">
+                    <button class="quantity-btn" onclick="decreaseQuantity(this)">-</button>
+                    <input type="text" value="1">
+                    <button class="quantity-btn" onclick="increaseQuantity(this)">+</button>
+                </div>
+                <button class="buy-btn" onclick="buyProduct(this)">Comprar</button>
+            </div>
+            <div class="item">
+                <img src="imagens/abacaxi.png" alt="Hortalica 1">
+                <p>Abacaxi</p>
+                <p class="preco">R$ 4,99<small>un</small></p>
+                <div class="quantity-control">
+                    <button class="quantity-btn" onclick="decreaseQuantity(this)">-</button>
+                    <input type="text" value="1">
+                    <button class="quantity-btn" onclick="increaseQuantity(this)">+</button>
+                </div>
+                <button class="buy-btn" onclick="buyProduct(this)">Comprar</button>
+            </div>
+        </section>
+    </main>
+
+    <div id="cart-sidebar" class="cart-sidebar">
+        <div class="cart-header">
+            <span class="close-cart" onclick="toggleCart()">X</span>
+            <h2>Carrinho de Compras</h2>
+            <p id="cart-item-count">0 Itens</p>
+        </div>
+        <div class="cart-items" id="cart-items">
+            <!-- Os itens adicionados ao carrinho aparecerão aqui -->
+        </div>
+        <div class="cart-total">
+            <h3>Total: R$ <span id="total-price">0.00</span></h3>
+            <button class="checkout-btn" onclick="finalizePurchase()">Finalizar Compra</button>
+        </div>
+    </div>
+
+    <div class="header">
+        &copy; 2023 - Todos os direitos reservados
+        <button onclick="logout()" style="float: right; background-color: red; color: white; 
+        border: none; padding: 5px 10px; cursor: pointer;">
+        Sair
+        </button>
+        </div>
+
+    <script src="javascript/script.js"></script>
+    <script type="module" src="auth.js"></script>
+</body>
+
+<script src="https://www.gstatic.com/firebasejs/9.1.2/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.1.2/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.1.2/firebase-database.js"></script>
+
+</html>

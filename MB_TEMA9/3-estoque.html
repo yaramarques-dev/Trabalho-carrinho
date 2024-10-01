@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Controle de Estoque</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fff3e0;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+    .header {
+      background-color: #ff9800;
+      padding: 20px;
+      color: white;
+      font-size: 24px;
+    }
+    .stock-charts {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+    }
+    .stock-chart {
+      width: 70%;
+      background-color: #fff;
+      padding: 15px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .alerts, .crud-container {
+      margin-top: 20px;
+      text-align: left;
+    }
+    .alert-item {
+      background-color: #fff;
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 5px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    }
+    .buttons {
+      margin-top: 20px;
+    }
+    button {
+      padding: 15px 20px;
+      font-size: 16px;
+      background-color: #ff9800;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    button:hover {
+      background-color: #fb8c00;
+    }
+    .input-group {
+      margin-top: 20px;
+    }
+    input {
+      padding: 10px;
+      font-size: 16px;
+      margin-right: 10px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    table, th, td {
+      border: 1px solid #ccc;
+    }
+    th, td {
+      padding: 10px;
+      text-align: center;
+    }
+    th {
+      background-color: #ff9800;
+      color: white;
+    }
+    .edit-btn, .delete-btn {
+      padding: 5px 10px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .edit-btn {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 3px;
+    }
+    .delete-btn {
+      background-color: #f44336;
+      color: white;
+      border: none;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">Controle de Estoque Doméstico</div>
+
+  <div class="stock-charts">
+    <div class="stock-chart">
+      <canvas id="stockChart"></canvas>
+    </div>
+  </div>
+
+  <div class="alerts" id="alerts"></div>
+
+  <!-- CRUD Container -->
+  <div class="crud-container">
+    <h2>Gerenciamento de Itens</h2>
+    <div class="input-group">
+      <input type="text" id="itemName" placeholder="Nome do Item">
+      <input type="number" id="quantity" placeholder="Quantidade">
+      <input type="date" id="expiryDate" placeholder="Data de Validade">
+      <button onclick="addItem()">Adicionar Item</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Nome do Item</th>
+          <th>Quantidade</th>
+          <th>Validade</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody id="itemTable"></tbody>
+    </table>
+  </div>
+
+  <div class="buttons">
+    <button onclick="generateReport()">Gerar Relatório</button>
+  </div>
+
+  <script>
+    let stock = JSON.parse(localStorage.getItem('stock')) || [];
+    const alertsElement = document.getElementById('alerts');
+    const stockChartElement = document.getElementById('stockChart').getContext('2d');
+    const itemTable = document.getElementById('itemTable');
+    let stockChart;
+    let editIndex = null;
+
+    function updateLocalStorage() {
+      localStorage.setItem('stock', JSON.stringify(stock));
+    }
+
+    function updateUI() {
+      alertsElement.innerHTML = '';
+      itemTable.innerHTML = '';
+      let stockData = [];
+      let itemLabels = [];
+
+      stock.forEach((item, index) => {
+        const today = new Date().toISOString().split('T')[0];
+
+        // Alert for expired items
+        if (item.expiryDate <= today) {
+          const alertElement = document.createElement('div');
+          alertElement.classList.add('alert-item');
+          alertElement.innerHTML = `
+            Alerta de Validade - ${item.name} (Vencido: ${item.expiryDate}) 
+            <button onclick="removeItem(${index})">Remover</button>
+          `;
+          alertsElement.appendChild(alertElement);
+        }
+
+        // Populate CRUD table
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${item.name}</td>
+          <td>${item.quantity}</td>
+          <td>${item.expiryDate}</td>
+          <td>
+            <button class="edit-btn" onclick="editItem(${index})">Editar</button>
+            <button class="delete-btn" onclick="removeItem(${index})">Excluir</button>
+          </td>
+        `;
+        itemTable.appendChild(row);
+
+        stockData.push(item.quantity);
+        itemLabels.push(item.name);
+      });
+
+      updateChart(itemLabels, stockData);
+    }
+
+    function addItem() {
+      const itemName = document.getElementById('itemName').value;
+      const quantity = parseInt(document.getElementById('quantity').value);
+      const expiryDate = document.getElementById('expiryDate').value;
+
+      if (itemName === '' || isNaN(quantity) || quantity <= 0 || expiryDate === '') return;
+
+      const newItem = { name: itemName, quantity, expiryDate };
+
+      if (editIndex === null) {
+        stock.push(newItem);
+      } else {
+        stock[editIndex] = newItem;
+        editIndex = null;
+      }
+
+      updateLocalStorage();
+      updateUI();
+
+      // Clear inputs
+      document.getElementById('itemName').value = '';
+      document.getElementById('quantity').value = '';
+      document.getElementById('expiryDate').value = '';
+    }
+
+    function editItem(index) {
+      const item = stock[index];
+      document.getElementById('itemName').value = item.name;
+      document.getElementById('quantity').value = item.quantity;
+      document.getElementById('expiryDate').value = item.expiryDate;
+      editIndex = index;
+    }
+
+    function removeItem(index) {
+      stock.splice(index, 1);
+      updateLocalStorage();
+      updateUI();
+    }
+
+    function updateChart(labels, data) {
+      if (stockChart) stockChart.destroy(); // Destroy previous chart
+
+      stockChart = new Chart(stockChartElement, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Quantidade em Estoque',
+            data: data,
+            backgroundColor: '#ff9800',
+          }]
+        },
+        options: {
+          scales: {
+            y: { beginAtZero: true }
+          },
+          responsive: true,
+        }
+      });
+    }
+
+    function generateReport() {
+      let report = 'Relatório de Estoque:\n\n';
+      stock.forEach(item => {
+        report += `Item: ${item.name}, Quantidade: ${item.quantity}, Validade: ${item.expiryDate}\n`;
+      });
+      alert(report);
+    }
+
+    // Inicializando a interface
+    updateUI();
+  </script>
+</body>
+</html>

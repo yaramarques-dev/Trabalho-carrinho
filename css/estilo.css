@@ -1,0 +1,87 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: url('../imagens/fundo.png') no-repeat center center fixed;
+    background-size: cover;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    z-index: 1; 
+}
+
+.login-box {
+    padding: 40px;
+    border-radius: 10px;
+    text-align: center;
+    width: 450px;
+    z-index: 2;
+    position: relative;
+}
+
+.logo img {
+    width: 100px;
+    margin-bottom: 20px;
+}
+
+.input-box {
+    margin-bottom: 20px;
+}
+
+.input-box input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid rgb(255, 255, 255);
+    background-color: transparent;
+    color: rgb(194, 195, 218);
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.input-box input::placeholder {
+    color: #ffffff;
+}
+
+.button-box {
+    margin-top: 20px;
+}
+
+.button-box button {
+    width: 100%;
+    padding: 10px;
+    background-color: #ccd3e7;
+    color: rgb(3, 40, 70);
+    border: none;
+    border-radius: 2px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.button-box button:hover {
+    background-color: #9cade2;
+}
+
+.forgot-password {
+    margin-top: 10px;
+}
+
+.forgot-password a {
+    text-decoration: none;
+    color: #e1e6f3;
+}
+
+.forgot-password a:hover {
+    text-decoration: underline;
+}

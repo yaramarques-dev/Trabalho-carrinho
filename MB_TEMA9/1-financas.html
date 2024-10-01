@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Finanças Pessoais</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+    .header {
+      background-color: #4CAF50;
+      padding: 20px;
+      color: white;
+      font-size: 24px;
+    }
+    .balance {
+      margin: 20px 0;
+      font-size: 28px;
+      color: #333;
+    }
+    .charts {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+    }
+    .chart {
+      width: 70%;
+      background-color: #fff;
+      padding: 15px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .transactions {
+      margin-top: 20px;
+      text-align: left;
+    }
+    .transaction-item {
+      background-color: #fff;
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 5px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    }
+    .buttons {
+      margin-top: 20px;
+    }
+    button {
+      padding: 15px 20px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .input-group {
+      margin-top: 20px;
+    }
+    input, select {
+      padding: 10px;
+      font-size: 16px;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">Gerenciador de Finanças</div>
+  <div class="balance">Saldo Atual: R$ <span id="balance">0,00</span></div>
+  
+  <div class="charts">
+    <div class="chart">
+      <canvas id="financeChart"></canvas>
+    </div>
+  </div>
+  
+  <div class="transactions" id="transactions"></div>
+  
+  <div class="input-group">
+    <input type="text" id="description" placeholder="Descrição">
+    <input type="number" id="amount" placeholder="Valor">
+    <select id="type">
+      <option value="income">Receita</option>
+      <option value="expense">Despesa</option>
+    </select>
+    <button onclick="addTransaction()">Adicionar</button>
+  </div>
+
+  <script>
+    let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+    const balanceElement = document.getElementById('balance');
+    const transactionsElement = document.getElementById('transactions');
+    const financeChartElement = document.getElementById('financeChart').getContext('2d');
+
+    let financeChart;
+
+    function updateLocalStorage() {
+      localStorage.setItem('transactions', JSON.stringify(transactions));
+    }
+
+    function updateUI() {
+      transactionsElement.innerHTML = '';
+      let balance = 0;
+      let incomes = 0;
+      let expenses = 0;
+      
+      transactions.forEach((transaction, index) => {
+        const transactionElement = document.createElement('div');
+        transactionElement.classList.add('transaction-item');
+        transactionElement.innerHTML = `
+          ${transaction.description} - ${transaction.type === 'income' ? 'Receita' : 'Despesa'} - R$ ${transaction.amount.toFixed(2)} 
+          <button onclick="removeTransaction(${index})">Remover</button>
+        `;
+        transactionsElement.appendChild(transactionElement);
+
+        if (transaction.type === 'income') {
+          incomes += transaction.amount;
+          balance += transaction.amount;
+        } else {
+          expenses += transaction.amount;
+          balance -= transaction.amount;
+        }
+      });
+
+      balanceElement.textContent = balance.toFixed(2);
+
+      // Atualizando gráfico
+      updateChart(incomes, expenses);
+    }
+
+    function addTransaction() {
+      const description = document.getElementById('description').value;
+      const amount = parseFloat(document.getElementById('amount').value);
+      const type = document.getElementById('type').value;
+
+      if (description === '' || isNaN(amount) || amount <= 0) return;
+
+      transactions.push({ description, amount, type });
+      updateLocalStorage();
+      updateUI();
+
+      document.getElementById('description').value = '';
+      document.getElementById('amount').value = '';
+    }
+
+    function removeTransaction(index) {
+      transactions.splice(index, 1);
+      updateLocalStorage();
+      updateUI();
+    }
+
+    function updateChart(incomes, expenses) {
+      if (financeChart) financeChart.destroy(); // Destruir gráfico anterior
+
+      financeChart = new Chart(financeChartElement, {
+        type: 'bar',
+        data: {
+          labels: ['Receitas', 'Despesas'],
+          datasets: [{
+            label: 'Valor',
+            data: [incomes, expenses],
+            backgroundColor: ['#4CAF50', '#FF6347'],
+          }]
+        },
+        options: {
+          scales: {
+            y: { beginAtZero: true }
+          },
+          responsive: true,
+          plugins: {
+            legend: { display: false }
+          }
+        }
+      });
+    }
+
+    // Inicializando a interface
+    updateUI();
+  </script>
+</body>
+</html>

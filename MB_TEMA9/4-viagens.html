@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planejador de Viagem</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #e1f5fe;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+    .header {
+      background-color: #0288d1;
+      padding: 20px;
+      color: white;
+      font-size: 24px;
+    }
+    .trip-list {
+      margin-top: 30px;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .trip-item {
+      background-color: #ffffff;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 600px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .trip-item div {
+      display: flex;
+      gap: 10px;
+    }
+    .buttons {
+      margin-top: 20px;
+    }
+    button {
+      padding: 10px 15px;
+      font-size: 16px;
+      background-color: #0288d1;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    button:hover {
+      background-color: #01579b;
+    }
+    .completed {
+      text-decoration: line-through;
+      color: gray;
+    }
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.4);
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 5px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    }
+    .close-btn {
+      background-color: #f44336;
+      color: white;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+      border-radius: 5px;
+      margin-top: 10px;
+    }
+
+    /* Responsividade */
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+      .trip-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .trip-item div {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+      }
+      button {
+        width: 100%;
+        margin-bottom: 10px;
+      }
+    }
+    @media (max-width: 480px) {
+      .header {
+        font-size: 20px;
+      }
+      .modal-content {
+        width: 90%;
+      }
+      .trip-item {
+        padding: 10px;
+      }
+      button {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">Planejador de Viagem</div>
+  <div class="trip-list" id="tripList"></div>
+  <div class="buttons">
+    <button onclick="abrirModal()">Adicionar Etapa</button>
+  </div>
+
+  <!-- Modal Structure -->
+  <div id="etapaModal" class="modal">
+    <div class="modal-content">
+      <h3 id="modalTitle">Adicionar Etapa</h3>
+      <input type="text" id="descricao" placeholder="Descrição da Etapa" style="width: 100%; padding: 10px; margin-bottom: 10px;"><br>
+      <input type="number" id="ordem" placeholder="Ordem da Etapa" style="width: 100%; padding: 10px; margin-bottom: 10px;"><br>
+      <input type="url" id="link" placeholder="Link (opcional)" style="width: 100%; padding: 10px; margin-bottom: 10px;"><br>
+      <button id="modalAction" onclick="salvarEtapa()" style="width: 100%; padding: 10px;">Salvar</button>
+      <button class="close-btn" onclick="fecharModal()" style="width: 100%; padding: 10px;">Cancelar</button>
+    </div>
+  </div>
+
+  <script>
+    let etapas = JSON.parse(localStorage.getItem('etapas')) || [];
+    let editIndex = null;
+
+    function renderizarEtapas() {
+      const tripList = document.getElementById('tripList');
+      tripList.innerHTML = '';
+
+      // Ordenar por ordem_etapa
+      etapas.sort((a, b) => a.ordem_etapa - b.ordem_etapa);
+
+      etapas.forEach((etapa, index) => {
+        const etapaDiv = document.createElement('div');
+        etapaDiv.classList.add('trip-item');
+        if (etapa.cumprida) {
+          etapaDiv.classList.add('completed');
+        }
+        etapaDiv.innerHTML = `
+          ${etapa.ordem_etapa}. ${etapa.descricao_da_etapa}
+          <div>
+            <button onclick="marcarCumprida(${index})">Cumprida</button>
+            <button onclick="abrirModal(${index})">Editar</button>
+            <button onclick="removerEtapa(${index})">Remover</button>
+            ${etapa.link_etapa ? `<a href="${etapa.link_etapa}" target="_blank">Link</a>` : ''}
+          </div>
+        `;
+        tripList.appendChild(etapaDiv);
+      });
+    }
+
+    function abrirModal(index = null) {
+      editIndex = index;
+      const modal = document.getElementById('etapaModal');
+      const descricao = document.getElementById('descricao');
+      const ordem = document.getElementById('ordem');
+      const link = document.getElementById('link');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalAction = document.getElementById('modalAction');
+
+      if (index !== null) {
+        // Edição
+        modalTitle.innerText = 'Editar Etapa';
+        modalAction.innerText = 'Atualizar';
+        descricao.value = etapas[index].descricao_da_etapa;
+        ordem.value = etapas[index].ordem_etapa;
+        link.value = etapas[index].link_etapa || '';
+      } else {
+        // Adição
+        modalTitle.innerText = 'Adicionar Etapa';
+        modalAction.innerText = 'Salvar';
+        descricao.value = '';
+        ordem.value = '';
+        link.value = '';
+      }
+
+      modal.style.display = 'flex';
+    }
+
+    function fecharModal() {
+      document.getElementById('etapaModal').style.display = 'none';
+    }
+
+    function salvarEtapa() {
+      const descricao = document.getElementById('descricao').value;
+      const ordem = parseInt(document.getElementById('ordem').value);
+      const link = document.getElementById('link').value || null;
+
+      if (descricao && ordem) {
+        const etapa = {
+          descricao_da_etapa: descricao,
+          ordem_etapa: ordem,
+          link_etapa: link,
+          cumprida: false
+        };
+
+        if (editIndex !== null) {
+          etapas[editIndex] = etapa; // Atualiza a etapa existente
+        } else {
+          etapas.push(etapa); // Adiciona nova etapa
+        }
+
+        salvarEtapas();
+        renderizarEtapas();
+        fecharModal();
+      }
+    }
+
+    function marcarCumprida(index) {
+      etapas[index].cumprida = !etapas[index].cumprida;
+      salvarEtapas();
+      renderizarEtapas();
+    }
+
+    function removerEtapa(index) {
+      etapas.splice(index, 1);
+      salvarEtapas();
+      renderizarEtapas();
+    }
+
+    function salvarEtapas() {
+      localStorage.setItem('etapas', JSON.stringify(etapas));
+    }
+
+    window.onclick = function(event) {
+      const modal = document.getElementById('etapaModal');
+      if (event.target === modal) {
+        fecharModal();
+      }
+    }
+
+    // Renderizar as etapas ao carregar a página
+    renderizarEtapas();
+  </script>
+</body>
+</html>

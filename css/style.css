@@ -1,0 +1,215 @@
+@import url(https://fonts.googleapis.com/css2?family=Mouse+Memoirs&display=swap);
+
+body {
+    background: url(../imagens/fundoClaro6.png) no-repeat center center fixed;
+    font-family: Arial, sans-serif;
+    background-size: cover;
+    margin: 0;
+    padding: 0;
+    justify-content: center;
+}
+
+header {
+    background-color: #191970;
+    color: white;
+    padding: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Organiza os itens: logo à esquerda, carrinho à direita */
+    position: relative;
+}
+
+.banner img {
+    width: 100%;
+    border-radius: 15px;
+}
+
+.logo img {
+    width: 110px;
+    height: auto;
+}
+
+.search-container {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%); /* Centraliza a barra de pesquisa */
+    display: flex;
+    align-items: center;
+    width: 40%;
+}
+
+#search {
+    padding: 10px 40px 10px 10px;
+    width: 100%;
+    border-radius: 5px;
+    border: none;
+    font-size: 16px;
+}
+
+.search-icon {
+    position: absolute;
+    right: 10px;
+    font-size: 20px;
+}
+
+.cart-icon img {
+    width: 105px;
+    height: auto;
+}
+
+main {
+    padding: 20px;
+}
+
+.category {
+    margin-bottom: 5px;
+}
+
+.category h2 {
+    color: #000000;
+    font-size: 50px;
+    font-family: "Mouse Memoirs", sans-serif;
+}
+
+.item {
+    display: inline-block;
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 10px;
+    text-align: center;
+    width: 150px;
+    border-radius: 15px;
+    margin-left: 30px;
+}
+
+.item img {
+    width: 100px;
+    height: 100px;
+}
+
+.preco {
+    font-size: 30px;
+}
+
+small {
+    font-size: 20px;
+}
+
+.quantity-control {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 5px;
+}
+
+.quantity-control input {
+    width: 30px;
+    text-align: center;
+}
+
+.quantity-btn {
+    background-color: #003366;
+    color: white;
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.buy-btn {
+    background-color: #ff5733;
+    color: white;
+    padding: 10px;
+    border: none;
+    margin-top: 10px;
+    cursor: pointer;
+    border-radius: 10px;
+}
+
+.buy-btn.clicked {
+    background-color: green;
+    transition: background-color 0.3s;
+}
+
+/* Carrinho lateral */
+.cart-sidebar {
+    width: 0;
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100%;
+    background-color: #003366;
+    color: white;
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 60px;
+}
+
+.cart-sidebar .cart-header {
+    padding: 10px;
+    text-align: center;
+}
+
+.cart-sidebar .cart-items {
+    padding: 10px;
+}
+
+.cart-sidebar .cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #ccc;
+}
+
+.cart-sidebar .cart-total {
+    padding: 10px;
+    background-color: #004080;
+    width: 100%;
+    text-align: center;
+    position: relative;
+}
+
+.cart-sidebar .checkout-btn {
+    background-color: #ff5733;
+    color: white;
+    padding: 10px;
+    border: none;
+    width: 100%;
+    cursor: pointer;
+}
+
+.close-cart {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    cursor: pointer;
+}
+
+.cart-icon {
+    position: relative;
+    cursor: pointer;
+}
+
+#cart-count {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    padding: 5px 10px;
+}
+
+.cart-item input {
+    width: 50px;
+    text-align: center;
+}
+
+.cart-item button {
+    background-color: #003366;
+    color: white;
+    padding: 5px;
+    border: none;
+    cursor: pointer;
+}
